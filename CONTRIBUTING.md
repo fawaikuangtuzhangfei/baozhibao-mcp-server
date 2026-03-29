@@ -1,12 +1,12 @@
 # 贡献指南
 
-感谢你对宝知道 MCP Server 的关注！我们欢迎任何形式的贡献。
+感谢你对不过期助手 MCP Server 的关注！我们欢迎任何形式的贡献。
 
 ## 🐛 报告问题
 
 如果你发现了 bug 或有功能建议：
 
-1. 在 [Issues](https://github.com/yechaoa/baozhibao-mcp-server/issues) 中搜索是否已有相关问题
+1. 在 [Issues](https://github.com/fawaikuangtuzhangfei/baozhibao-mcp-server/issues) 中搜索是否已有相关问题
 2. 如果没有，创建新的 Issue，包含：
    - 清晰的标题
    - 详细的问题描述
@@ -125,7 +125,7 @@ docs: update README with Cursor configuration
 
 如有疑问，可以通过以下方式联系：
 
-- GitHub Issues: [创建 Issue](https://github.com/yechaoa/baozhibao-mcp-server/issues)
+- GitHub Issues: [创建 Issue](https://github.com/fawaikuangtuzhangfei/baozhibao-mcp-server/issues)
 - Email: your-email@example.com
 
 ## 📜 行为准则

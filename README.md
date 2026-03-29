@@ -1,4 +1,4 @@
-# 宝知道 MCP Server
+# 不过期助手 MCP Server
 
 > 物品管理小程序的 MCP Server，支持智能体（Claude、Cursor、Cline、小龙虾等）通过 API Key 管理物品。
 
@@ -41,21 +41,96 @@ npx baozhibao-mcp-server
 ### 方式二：本地安装
 
 ```bash
-git clone https://github.com/yechaoa/baozhibao-mcp-server.git
+git clone https://github.com/fawaikuangtuzhangfei/baozhibao-mcp-server.git
 cd baozhibao-mcp-server
 npm install
 npm run build
 ```
 
-## ⚙️ 配置
+## 🚀 快速开始（从零配置）
+
+### 第一步：获取 API Key
+
+1. 打开微信，搜索「不过期助手」小程序
+2. 进入小程序后，点击「我的」->「设置」
+3. 找到「API Key 管理」，点击「创建 API Key」
+4. 输入名称（如 "Claude Code"），点击确认
+5. **立即复制** 生成的 API Key（格式：`sk_xxx`），只会显示一次！
+
+### 第二步：安装 MCP Server
+
+**方式 A：全局安装（推荐）**
+
+```bash
+npm install -g baozhibao-mcp-server
+```
+
+**方式 B：从源码构建**
+
+```bash
+git clone https://github.com/fawaikuangtuzhangfei/baozhibao-mcp-server.git
+cd baozhibao-mcp-server
+npm install
+npm run build
+```
+
+### 第三步：配置 Claude Code
+
+1. 找到配置文件位置：
+   - **Windows**: `C:\Users\<你的用户名>\.claude\settings.json`
+   - **macOS/Linux**: `~/.claude/settings.json`
+
+2. 如果文件不存在，手动创建
+
+3. 添加 MCP Server 配置：
+
+```json
+{
+  "mcpServers": {
+    "baozhibao": {
+      "command": "node",
+      "args": [
+        "D:/path/to/baozhibao-mcp-server/dist/index.js"
+      ],
+      "env": {
+        "BAOZHIBAO_API_URL": "https://h1b.site/out_date",
+        "BAOZHIBAO_API_KEY": "sk_xxx"
+      }
+    }
+  }
+}
+```
+
+> **注意**：
+> - `args` 填你实际安装的路径
+> - `BAOZHIBAO_API_URL` 填后端服务地址
+> - `BAOZHIBAO_API_KEY` 填第一步获取的密钥
+
+### 第四步：重启 Claude Code
+
+配置完成后，重启 Claude Code 使配置生效。
+
+### 第五步：验证配置
+
+在 Claude Code 中输入：
+
+```
+帮我看看我有哪些物品
+```
+
+如果返回你的物品列表，说明配置成功！
+
+---
+
+## ⚙️ 详细配置
 
 ### 环境变量
 
-创建 `.env` 文件或设置环境变量：
+创建 `.env` 文件或直接在 MCP 配置的 `env` 中设置：
 
 ```bash
 # API 服务地址（必填）
-BAOZHIBAO_API_URL=https://your-api.com
+BAOZHIBAO_API_URL=https://h1b.site/out_date
 
 # API Key（可选，用于默认登录）
 BAOZHIBAO_API_KEY=sk_xxx
@@ -67,9 +142,9 @@ BAOZHIBAO_API_KEY=sk_xxx
 cp .env.example .env
 ```
 
-## 🚀 使用
+## 🖥️ 其他客户端配置
 
-### 在 Claude Desktop 中配置
+### Claude Desktop
 
 编辑 `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS) 或 `%APPDATA%\Claude\claude_desktop_config.json` (Windows)：
 
@@ -82,7 +157,7 @@ cp .env.example .env
         "/path/to/baozhibao-mcp-server/dist/index.js"
       ],
       "env": {
-        "BAOZHIBAO_API_URL": "https://your-api.com",
+        "BAOZHIBAO_API_URL": "https://h1b.site/out_date",
         "BAOZHIBAO_API_KEY": "sk_xxx"
       }
     }
@@ -103,7 +178,7 @@ cp .env.example .env
         "/path/to/baozhibao-mcp-server/dist/index.js"
       ],
       "env": {
-        "BAOZHIBAO_API_URL": "https://your-api.com",
+        "BAOZHIBAO_API_URL": "https://h1b.site/out_date",
         "BAOZHIBAO_API_KEY": "sk_xxx"
       }
     }
@@ -124,7 +199,7 @@ cp .env.example .env
         "/path/to/baozhibao-mcp-server/dist/index.js"
       ],
       "env": {
-        "BAOZHIBAO_API_URL": "https://your-api.com"
+        "BAOZHIBAO_API_URL": "https://h1b.site/out_date"
       }
     }
   }
@@ -143,7 +218,7 @@ cp .env.example .env
       "/path/to/baozhibao-mcp-server/dist/index.js"
     ],
     "env": {
-      "BAOZHIBAO_API_URL": "https://your-api.com"
+      "BAOZHIBAO_API_URL": "https://h1b.site/out_date"
     }
   }
 }
@@ -164,7 +239,7 @@ cp .env.example .env
         "/path/to/baozhibao-mcp-server/dist/index.js"
       ],
       "env": {
-        "BAOZHIBAO_API_URL": "https://your-api.com"
+        "BAOZHIBAO_API_URL": "https://h1b.site/out_date"
       }
     }
   }
@@ -173,42 +248,99 @@ cp .env.example .env
 
 ## 💬 使用示例
 
-### 登录
+以下为真实对话效果，AI 会自动调用工具并以友好的格式呈现结果。
+
+### 场景一：查询所有物品
 
 ```
-用户: 帮我登录宝知道
-AI: [调用 login 工具]
-     请提供您的 API Key（格式：sk_xxx）
+用户: 帮我看看我有哪些物品
+
+AI: 你一共有 28 件物品，按状态分类如下：
+
+    ✅ 未过期（有效物品）
+    | 物品               | 位置   | 数量 | 过期日期     |
+    |--------------------|--------|------|-------------|
+    | 苹果               | 冰箱   | 1    | 无保质期     |
+    | 尖叫多肽型运动饮料 | 我的家 | 4    | 2026-04-29  |
+    | 红枣桂圆枸杞茶     | 我的家 | 1    | 2026-09-08  |
+    | 洁柔纸面巾         | 我的家 | 6    | 2028-11-29  |
+
+    ⚠️ 已过期（需注意）
+    | 物品         | 数量 | 过期日期     |
+    |--------------|------|-------------|
+    | 三麟椰子水   | 2    | 2025-06-08  |
+
+    📌 提醒：三麟椰子水已过期将近10个月了，建议处理掉。
 ```
 
-### 添加物品
+> AI 会自动分页查询、按状态分类汇总，并主动提醒过期物品。
 
-```
-用户: 帮我记录一下，牛奶放在冰箱里，5月1号过期
-AI: [调用 add_item 工具]
-     ✅ 已添加：牛奶
-     - 存放位置：冰箱
-     - 过期日期：2024-05-01
-```
-
-### 查询物品
+### 场景二：按关键词搜索
 
 ```
 用户: 我的牛奶放哪了？
-AI: [调用 query_items 工具]
-     搜索结果：
-     - 牛奶 x 2，存放于冰箱
-     - 纯牛奶 x 1，存放于冷藏室
+
+AI: 找到 2 件牛奶相关物品：
+    - 牛奶 x 2，位于未设置，过期日期 2025-12-31（已过期88天）
+
+    ⚠️ 这批牛奶已经过期了，建议检查是否还能使用。
 ```
 
-### 扫码添加
+### 场景三：添加物品
 
 ```
-用户: 帮我扫码添加这个商品，条形码是 6901234567890
-AI: [调用 scan_add_item 工具]
-     已识别商品：伊利纯牛奶
-     请补充存放位置和过期日期信息
+用户: 帮我记录一下，牛奶放在冰箱里，5月1号过期
+
+AI: ✅ 已添加：牛奶
+    - 存放位置：冰箱
+    - 过期日期：2025-05-01
+    - 数量：1
 ```
+
+### 场景四：扫码添加
+
+```
+用户: 帮我扫码添加这个商品，条形码是 6920459950180，放冰箱，明年3月过期
+
+AI: ✅ 已识别并添加商品
+    - 商品名称：蒙牛纯牛奶
+    - 存放位置：冰箱
+    - 过期日期：2026-03-31
+    - 数量：1
+```
+
+### 场景五：按状态筛选
+
+```
+用户: 有哪些快过期的东西？
+
+AI: 查询到以下临期物品：
+    | 物品               | 位置   | 剩余天数 | 过期日期    |
+    |--------------------|--------|---------|------------|
+    | 尖叫多肽型运动饮料 | 我的家 | 30天    | 2026-04-29 |
+
+    📌 运动饮料还有1个月过期，建议尽快饮用。
+```
+
+### 场景六：查看物品详情
+
+```
+用户: 帮我看看牛奶的详细信息
+
+AI: 物品详细信息：
+    - 名称：牛奶
+    - 存放位置：未设置
+    - 数量：2
+    - 过期日期：2025-12-31
+    - 状态：已过期（过期88天）
+```
+
+### 实用提示
+
+- **分页加载**：物品较多时 AI 会自动分页查询（每页 20 条）
+- **智能分类**：AI 会按"未过期/已过期/已消费"自动归类，不只是罗列数据
+- **过期提醒**：AI 会主动计算过期天数并给出建议
+- **模糊匹配**：搜索关键词支持物品名称、品牌等模糊匹配
 
 ## 🛠️ 开发
 
@@ -231,7 +363,7 @@ npx @modelcontextprotocol/inspector npm run dev
 
 ## 🔑 获取 API Key
 
-1. 打开「宝知道」小程序
+1. 打开「不过期助手」小程序
 2. 进入「设置」->「API Key 管理」
 3. 点击「创建 API Key」
 4. 输入名称（如"小龙虾"）
@@ -355,13 +487,14 @@ baozhibao-mcp-server/
 ## 🔗 相关链接
 
 - [MCP 官方文档](https://modelcontextprotocol.io/)
-- [宝知道小程序](https://your-miniapp-url.com)
-- [问题反馈](https://github.com/yechaoa/baozhibao-mcp-server/issues)
+- 不过期助手小程序
+![小程序二维码](./doc/mini-scan.png)
+- [问题反馈](https://github.com/fawaikuangtuzhangfei/baozhibao-mcp-server/issues)
 
 ## 📞 联系方式
 
-- 作者: yechaoa
-- GitHub: [@yechaoa](https://github.com/yechaoa)
+- 作者: fawaikuangtuzhangfei
+- GitHub: [@fawaikuangtuzhangfei](https://github.com/fawaikuangtuzhangfei)
 
 ---
 

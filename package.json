@@ -1,12 +1,17 @@
 {
   "name": "baozhibao-mcp-server",
   "version": "1.0.0",
-  "description": "MCP Server for 物品管理小程序 - 支持智能体通过 API Key 管理物品",
+  "description": "MCP Server for 不过期助手 - 支持智能体通过 API Key 管理物品",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "bin": {
     "baozhibao-mcp": "dist/index.js"
   },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "build": "tsc",
     "start": "node dist/index.js",
@@ -16,10 +21,21 @@
   "keywords": [
     "mcp",
     "model-context-protocol",
-    "item-management"
+    "baozhibao",
+    "item-management",
+    "claude",
+    "cursor"
   ],
   "author": "yechaoa",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fawaikuangtuzhangfei/baozhibao-mcp-server.git"
+  },
+  "bugs": {
+    "url": "https://github.com/fawaikuangtuzhangfei/baozhibao-mcp-server/issues"
+  },
+  "homepage": "https://github.com/fawaikuangtuzhangfei/baozhibao-mcp-server#readme",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.0",
     "axios": "^1.6.0",

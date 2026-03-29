@@ -1,18 +1,35 @@
 #!/usr/bin/env node
+const path = require('path');
 const { Client } = require('@modelcontextprotocol/sdk/client/index.js');
 const { StdioClientTransport } = require('@modelcontextprotocol/sdk/client/stdio.js');
 
-// 配置
+// 读取 .env.test 文件
+function loadEnvTest() {
+  const fs = require('fs');
+  const envPath = path.join(__dirname, '.env.test');
+  const env = {};
+  if (fs.existsSync(envPath)) {
+    const content = fs.readFileSync(envPath, 'utf-8');
+    content.split('\n').forEach(line => {
+      const match = line.match(/^([^=]+)=(.*)$/);
+      if (match) {
+        env[match[1]] = match[2];
+      }
+    });
+  }
+  return env;
+}
+
+const env = loadEnvTest();
 const serverPath = 'D:/workspace/WeChatProjects_workspace/out_date_boot/mcp-server/dist/index.js';
-const apiUrl = process.env.BAOZHIBAO_API_URL || 'https://h1b.site/out_date';
-const apiKey = process.env.BAOZHIBAO_API_KEY || 'sk_test';
+const apiUrl = env.BAOZHIBAO_API_URL || 'http://localhost:8889/out_date';
+const apiKey = env.BAOZHIBAO_API_KEY || 'sk_test';
 
 async function testMCPServer() {
-  console.log('🚀 Starting MCP Server test...\n');
+  console.log('🚀 完整功能测试\n');
   console.log(`API URL: ${apiUrl}`);
-  console.log(`API Key: ${apiKey.substring(0, 10)}...\n`);
+  console.log(`API Key: ${apiKey.substring(0, 15)}...\n`);
 
-  // 创建 stdio transport - 会自动启动服务器进程
   const transport = new StdioClientTransport({
     command: 'node',
     args: [serverPath],
@@ -24,99 +41,134 @@ async function testMCPServer() {
   });
 
   try {
-    // 创建客户端
     const client = new Client(
-      {
-        name: 'test-client',
-        version: '1.0.0',
-      },
-      {
-        capabilities: {},
-      }
+      { name: 'test-client', version: '1.0.0' },
+      { capabilities: {} }
     );
 
-    // 连接 transport (会自动启动服务器)
-    console.log('📡 Connecting to server...');
+    console.log('📡 连接服务器...');
     await client.connect(transport);
-    console.log('✅ Connected!\n');
+    console.log('✅ 已连接\n');
 
-    // 测试 1: 列出工具
-    console.log('🔧 Test 1: List Tools');
+    // 测试 1: 登录
+    console.log('🔐 测试 1: 登录');
     console.log('─────────────────────────────');
-    const toolsResponse = await client.listTools();
-    console.log(`Available tools: ${toolsResponse.tools.length}`);
-    toolsResponse.tools.forEach(tool => {
-      console.log(`  - ${tool.name}: ${tool.description.substring(0, 50)}...`);
+    const loginRes = await client.callTool({
+      name: 'login',
+      arguments: { apiKey },
     });
+    console.log(loginRes.content[0].text);
     console.log('');
 
-    // 测试 2: 登录
-    console.log('🔐 Test 2: Login');
+    // 测试 2: 查询所有物品
+    console.log('📦 测试 2: 查询所有物品');
     console.log('─────────────────────────────');
-    try {
-      const loginResponse = await client.callTool({
-        name: 'login',
-        arguments: {
-          apiKey: apiKey,
-        },
-      });
-      console.log('Login result:', loginResponse.content[0].text);
-    } catch (err) {
-      console.log('Login failed:', err.message);
-    }
+    const queryRes = await client.callTool({
+      name: 'query_items',
+      arguments: {},
+    });
+    console.log(queryRes.content[0].text);
     console.log('');
 
-    // 测试 3: 查询物品
-    console.log('📦 Test 3: Query Items');
+    // 测试 3: 关键词搜索
+    console.log('🔍 测试 3: 关键词搜索"测试"');
     console.log('─────────────────────────────');
-    try {
-      const queryResponse = await client.callTool({
-        name: 'query_items',
-        arguments: {
-          keyword: '测试',
-        },
-      });
-      console.log('Query result:', queryResponse.content[0].text);
-    } catch (err) {
-      console.log('Query failed:', err.message);
-    }
+    const searchRes = await client.callTool({
+      name: 'query_items',
+      arguments: { keyword: '测试' },
+    });
+    console.log(searchRes.content[0].text);
     console.log('');
 
-    // 测试 4: 添加物品
-    console.log('➕ Test 4: Add Item');
+    // 测试 4: 获取物品详情
+    console.log('📄 测试 4: 获取物品详情 (ID: 6057)');
+    console.log('─────────────────────────────');
+    const getRes = await client.callTool({
+      name: 'get_item',
+      arguments: { id: 6057 },
+    });
+    console.log(getRes.content[0].text);
+    console.log('');
+
+    // 测试 5: 添加物品（简单版）
+    console.log('➕ 测试 5: 添加物品（简单）');
     console.log('─────────────────────────────');
     try {
-      const addResponse = await client.callTool({
+      const addRes1 = await client.callTool({
         name: 'add_item',
         arguments: {
-          name: '测试物品',
-          locationName: '测试位置',
-          expiryDate: '2025-12-31',
+          name: '苹果',
+          locationName: '冰箱',
         },
       });
-      console.log('Add item result:', addResponse.content[0].text);
+      console.log(addRes1.content[0].text);
     } catch (err) {
-      console.log('Add item failed:', err.message);
+      console.log('Error:', err.message);
     }
     console.log('');
 
-    console.log('✅ All tests completed!');
+    // 测试 6: 添加物品（完整版）
+    console.log('➕ 测试 6: 添加物品（完整信息）');
+    console.log('─────────────────────────────');
+    try {
+      const addRes2 = await client.callTool({
+        name: 'add_item',
+        arguments: {
+          name: '牛奶',
+          locationName: '冷藏室',
+          expiryDate: '2025-12-31',
+          quantity: 2,
+          categoryName: '食品',
+          brand: '伊利',
+          price: 5.5,
+        },
+      });
+      console.log(addRes2.content[0].text);
+    } catch (err) {
+      console.log('Error:', err.message);
+    }
+    console.log('');
+
+    // 测试 7: 扫码添加
+    console.log('📱 测试 7: 扫码添加物品');
+    console.log('─────────────────────────────');
+    try {
+      const scanRes = await client.callTool({
+        name: 'scan_add_item',
+        arguments: {
+          barcode: '6974324350001',
+          locationName: '货架',
+        },
+      });
+      console.log(scanRes.content[0].text);
+    } catch (err) {
+      console.log('Error:', err.message);
+    }
+    console.log('');
+
+    // 测试 8: 查询临期物品
+    console.log('⏰ 测试 8: 查询临期物品');
+    console.log('─────────────────────────────');
+    try {
+      const expiringRes = await client.callTool({
+        name: 'query_items',
+        arguments: { isNearlyExpired: 1 },
+      });
+      console.log(expiringRes.content[0].text);
+    } catch (err) {
+      console.log('Error:', err.message);
+    }
+    console.log('');
+
+    console.log('✅ 所有测试完成!');
 
   } catch (error) {
-    console.error('❌ Test failed:', error.message);
+    console.error('❌ 测试失败:', error.message);
   } finally {
-    // 清理
-    try {
-      await transport.close();
-    } catch (e) {
-      // ignore
-    }
-    console.log('\n🧹 Cleaned up');
+    await transport.close();
+    console.log('\n🧹 清理完成');
     process.exit(0);
   }
 }
 
-testMCPServer().catch((err) => {
-  console.error('Fatal error:', err);
-  process.exit(1);
-});
+testMCPServer().catch(console.error);

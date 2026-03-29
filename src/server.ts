@@ -163,8 +163,3 @@ export async function main() {
   await server.connect(transport);
   console.error('[MCP] Server started');
 }
-
-main().catch((error) => {
-  console.error('[MCP] Server error:', error);
-  process.exit(1);
-});

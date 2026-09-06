@@ -16,6 +16,8 @@ build/
 .env
 .env.local
 .env.*.local
+# .env.test 曾被跟踪并提交过真实 API Key，补上以免再次入库
+.env.test
 
 # IDE
 .vscode/
